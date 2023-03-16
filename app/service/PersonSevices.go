@@ -20,10 +20,14 @@ func (p *PersonService) GetFamily(id int) []models.FamilyStatus {
 		children = append(children, models.FamilyStatus{
 			Status: family.Status,
 			Person: struct {
+				Id       int    `json:"id,omitempty"`
+				FullName string `json:"fullName,omitempty"`
+				Token    string `json:"token,omitempty"`
+			}(struct {
 				Id       int
 				FullName string
 				Token    string
-			}{Id: child.ID, FullName: child.Name + " " + child.LastName + " " + child.Surname, Token: child.Token},
+			}{Id: child.ID, FullName: child.Name + " " + child.LastName + " " + child.Surname, Token: child.Token}),
 		})
 	}
 	return children
