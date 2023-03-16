@@ -13,10 +13,10 @@ func (PersonFamily) TableName() string {
 }
 
 type FamilyStatus struct {
-	Status int
+	Status int `json:"status,omitempty"`
 	Person struct {
-		Id       int    `json:"id,omitempty"`
-		FullName string `json:"fullName,omitempty"`
+		Id       int    `json:"id,omitempty" `
+		FullName string `json:"fullName,omitempty" `
 		Token    string `json:"token,omitempty"`
-	}
+	} `json:"person"`
 }
