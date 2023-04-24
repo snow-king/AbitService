@@ -1,23 +1,17 @@
 package main
 
 import (
-	"AbitService/app/models"
-	"AbitService/router"
-	"github.com/joho/godotenv"
+	server "AbitService/app"
+	"github.com/spf13/viper"
 	"log"
 )
 
-func init() {
-	// loads values from .env into the system
-	if err := godotenv.Load(); err != nil {
-		log.Print("No .env file found")
-	}
-}
 func main() {
-	r := router.InitRouter()
-	models.ConnectDatabase() // new
-	err := r.Run()
+	viper.SetConfigFile(".env")
+	err := viper.ReadInConfig()
 	if err != nil {
-		return
+		log.Fatalf("%s", err.Error())
 	}
+	app := new(server.App)
+	app.Run("8090")
 }

@@ -2,12 +2,10 @@ package router
 
 import (
 	PersonControllers "AbitService/app/controllers"
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 )
 
-func InitRouter() *gin.Engine {
-	r := gin.Default()
-	r.GET("/person/:id", PersonControllers.Index)
-	r.GET("/person/:id/family", PersonControllers.ShowFamily)
-	return r
+func RegisterHTTPEndpoints(router fiber.Router) {
+	router.Get("/person/:id", PersonControllers.Index)
+	router.Get("/person/:id/family", PersonControllers.ShowFamily)
 }

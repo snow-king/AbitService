@@ -2,27 +2,25 @@ package PersonControllers
 
 import (
 	"AbitService/app/service"
-	"AbitService/app/service/helpers"
-	"github.com/gin-gonic/gin"
-	"net/http"
+	"github.com/gofiber/fiber/v2"
 	"strconv"
 )
 
-func Index(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+func Index(c *fiber.Ctx) error {
+	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
-		helpers.SendResponse(c, helpers.Response{Status: http.StatusBadRequest, Error: []string{"Не верный id"}})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Не верный id"})
 	}
 	person := new(service.PersonService)
 	response := person.Show(id)
-	c.JSON(http.StatusOK, response)
+	return c.Status(fiber.StatusOK).JSON(response)
 }
-func ShowFamily(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+func ShowFamily(c *fiber.Ctx) error {
+	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
-		helpers.SendResponse(c, helpers.Response{Status: http.StatusBadRequest, Error: []string{"Не верный id"}})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Не верный id"})
 	}
 	person := new(service.PersonService)
 	response := person.GetFamily(id)
-	c.JSON(http.StatusOK, response)
+	return c.Status(fiber.StatusOK).JSON(response)
 }
