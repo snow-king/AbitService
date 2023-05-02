@@ -40,6 +40,5 @@ func getEnvAsBool(name string, defaultVal bool) bool {
 	if val, err := strconv.ParseBool(valStr); err == nil {
 		return val
 	}
-
 	return defaultVal
 }
