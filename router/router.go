@@ -10,5 +10,5 @@ func RegisterHTTPEndpoints(router fiber.Router) {
 	router.Get("/person/:id/family", handlers.ShowFamily)
 	router.Get("/groups", handlers.CompGroup)
 	router.Post("/family/create", handlers.AppendFamily)
-
+	router.Get("/person/:id/list", handlers.ListClaimed)
 }

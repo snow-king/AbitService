@@ -2,28 +2,29 @@ package models
 
 import "time"
 
-type CompGroups struct {
-	Id                int       `json:"id"`
-	SpecId            int       `json:"specId"`
-	PlanId            int       `json:"planId"`
-	ContactId         int       `json:"contactId"`
-	FormaObucheniyaId int       `json:"formaObucheniyaId"`
-	FilialId          int       `json:"filialId,omitempty"`
-	Status            int       `json:"status,omitempty"`
-	Active            int       `json:"active,omitempty"`
-	Name              string    `json:"name,omitempty"`
-	SsName            string    `json:"ssName,omitempty"`
-	FisId             int       `json:"fisId,omitempty"`
-	Type              int       `json:"type,omitempty"`
-	SyncSs            int       `json:"syncSs,omitempty"`
-	CreatedAt         time.Time `json:"createdAt"`
-	UpdatedAt         time.Time `json:"updatedAt"`
-	PotokId           int       `json:"potokId,omitempty"`
-	Potok             Potok     `gorm:"foreignKey:Id;references:PotokId"`
-	Plan              Plan      `gorm:"foreignKey:Id;references:PlanId"`
+type CompGroup struct {
+	Id                int        `json:"id"`
+	SpecId            int        `json:"specId"`
+	PlanId            int        `json:"planId"`
+	ContactId         int        `json:"contactId"`
+	FormaObucheniyaId int        `json:"formaObucheniyaId"`
+	FilialId          int        `json:"filialId,omitempty"`
+	Status            int        `json:"status,omitempty"`
+	Active            int        `json:"active,omitempty"`
+	Name              string     `json:"name,omitempty"`
+	SsName            string     `json:"ssName,omitempty"`
+	FisId             int        `json:"fisId,omitempty"`
+	Type              int        `json:"type,omitempty"`
+	SyncSs            int        `json:"syncSs,omitempty"`
+	CreatedAt         time.Time  `json:"createdAt"`
+	UpdatedAt         time.Time  `json:"updatedAt"`
+	PotokId           int        `json:"potokId,omitempty"`
+	Potok             Potok      `gorm:"foreignKey:Id;references:PotokId"`
+	Plan              Plan       `gorm:"foreignKey:Id;references:PlanId"`
+	SpecSoots         []SpecSoot `gorm:"foreignKey:CompGroupId;references:Id"`
 }
 
-func (CompGroups) TableName() string {
+func (CompGroup) TableName() string {
 	return "comp_groups"
 }
 
@@ -72,4 +73,52 @@ type StudyForm struct {
 
 func (StudyForm) TableName() string {
 	return "studyforms"
+}
+
+type SpecSoot struct {
+	Id                 int
+	AbitId             int
+	ApplicationDate    time.Time
+	SpecId             int
+	FormId             int
+	ContractId         int
+	UserId             int
+	NapravId           int
+	CompGroupId        int
+	AbitDocEdu         int
+	Original           int
+	PassExam           int
+	Potok              string
+	Professionalism    string
+	AbortDate          time.Time
+	Raiting            int
+	Kurs               string
+	RegDate            time.Time
+	ReseptionCondition int
+	FilialId           int
+	CompGroups         CompGroup `gorm:"foreignKey:Id;references:CompGroupId"`
+	Contract           Contract  `gorm:"foreignKey:Id;references:ContractId"`
+	AbitCard           AbitCard  `gorm:"foreignKey:Id;references:AbitId"`
+}
+
+func (SpecSoot) TableName() string {
+	return "spec_soot"
+}
+
+type Contract struct {
+	Id   int
+	Name string
+}
+
+func (c Contract) TableName() string {
+	return "contracts"
+}
+
+type ShortPlans struct {
+	PlanOK   int
+	PlanPVZ  int
+	PlanC    int
+	PlanK    int
+	PlanI    int
+	PlanKvot int
 }

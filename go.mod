@@ -5,6 +5,8 @@ go 1.20
 require (
 	github.com/gofiber/fiber/v2 v2.44.0
 	github.com/spf13/viper v1.15.0
+	github.com/streadway/amqp v1.0.0
+	golang.org/x/exp v0.0.0-20230425010034-47ecfdc1ba53
 	gorm.io/driver/mysql v1.4.7
 	gorm.io/gorm v1.24.3
 )

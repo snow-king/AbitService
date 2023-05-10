@@ -9,21 +9,20 @@ import (
 )
 
 type Comp struct {
+	Id       int
 	Name     string
 	Date     time.Time
 	EducForm string
-	Plans    struct {
-		PlanOK   int
-		PlanPVZ  int
-		PlanC    int
-		PlanK    int
-		PlanI    int
-		PlanKvot int
-	}
+	Plans    models.ShortPlans
+}
+type RatingList struct {
+	GroupId int
+	Name    string
+	Rating  []Rating
 }
 
 func GetGroups(status int) []Comp {
-	var groups []models.CompGroups
+	var groups []models.CompGroup
 	var comp []Comp
 	err := models.DbAbit.Preload("Potok", func(db *gorm.DB) *gorm.DB {
 		return db.Where("potoks.pot_status_id = ?", status)
@@ -36,17 +35,11 @@ func GetGroups(status int) []Comp {
 	}
 	for _, group := range groups {
 		comp = append(comp, Comp{
+			Id:       group.Id,
 			Name:     group.Name,
 			Date:     group.Potok.DateStart,
 			EducForm: group.Plan.StudyForm.Name,
-			Plans: struct {
-				PlanOK   int
-				PlanPVZ  int
-				PlanC    int
-				PlanK    int
-				PlanI    int
-				PlanKvot int
-			}{
+			Plans: models.ShortPlans{
 				PlanOK:   group.Plan.Plan1,
 				PlanPVZ:  group.Plan.Plan2,
 				PlanC:    group.Plan.Plan3,
@@ -57,4 +50,30 @@ func GetGroups(status int) []Comp {
 		})
 	}
 	return comp
+}
+
+func GetList(status int) []RatingList {
+	var groups []models.CompGroup
+	err := models.DbAbit.Preload("Potok", func(db *gorm.DB) *gorm.DB {
+		return db.Where("potoks.pot_status_id = ?", status)
+	}).Preload("SpecSoots", func(db *gorm.DB) *gorm.DB {
+		return db.Preload("AbitCard", func(db *gorm.DB) *gorm.DB {
+			return db.Preload("Marks", func(db *gorm.DB) *gorm.DB {
+				return db.Preload(clause.Associations)
+			})
+		})
+	}).Find(&groups).Error
+	if err != nil {
+		log.Println(err)
+	}
+	var rating []RatingList
+	for _, group := range groups {
+		list := getListApplicants(group.SpecSoots)
+		rating = append(rating, RatingList{
+			GroupId: group.Id,
+			Name:    group.SsName,
+			Rating:  list,
+		})
+	}
+	return rating
 }

@@ -38,3 +38,9 @@ type Person struct {
 func (Person) TableName() string {
 	return "persons"
 }
+
+type AbitCard struct {
+	Id       int
+	PersonID int
+	Marks    []Mark `gorm:"foreignKey:AbitId;references:Id"`
+}
