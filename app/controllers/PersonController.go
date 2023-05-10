@@ -1,28 +1,46 @@
-package PersonControllers
+package Handlers
 
 import (
 	"AbitService/app/service"
-	"AbitService/app/service/helpers"
-	"github.com/gin-gonic/gin"
-	"net/http"
+	"github.com/gofiber/fiber/v2"
+	"log"
 	"strconv"
 )
 
-func Index(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+type FamilyAdd struct {
+	Token    string `validate:"required"`
+	ParentId int
+}
+
+func Index(c *fiber.Ctx) error {
+	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
-		helpers.SendResponse(c, helpers.Response{Status: http.StatusBadRequest, Error: []string{"Не верный id"}})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Не верный id"})
 	}
 	person := new(service.PersonService)
 	response := person.Show(id)
-	c.JSON(http.StatusOK, response)
+	return c.Status(fiber.StatusOK).JSON(response)
 }
-func ShowFamily(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+func ShowFamily(c *fiber.Ctx) error {
+	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
-		helpers.SendResponse(c, helpers.Response{Status: http.StatusBadRequest, Error: []string{"Не верный id"}})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Не верный id"})
 	}
 	person := new(service.PersonService)
 	response := person.GetFamily(id)
-	c.JSON(http.StatusOK, response)
+	return c.Status(fiber.StatusOK).JSON(response)
+}
+func AppendFamily(c *fiber.Ctx) error {
+	request := new(FamilyAdd)
+	err := c.BodyParser(request)
+	if err != nil {
+		log.Println(err)
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "не верные данные "})
+	}
+	family := service.NewFamily(request.ParentId)
+	err = family.GetAccess(request.Token)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "не верные данные "})
+	}
+	return c.JSON(fiber.Map{"message": "Запрос на создание семьи отправлен"})
 }
