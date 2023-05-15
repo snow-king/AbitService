@@ -16,9 +16,10 @@ type Comp struct {
 	Plans    models.ShortPlans
 }
 type RatingList struct {
-	GroupId int
-	Name    string
-	Rating  []Rating
+	GroupId        int
+	Name           string
+	TotalPositions int
+	Rating         []Rating
 }
 
 func GetGroups(status int) []Comp {
@@ -56,7 +57,7 @@ func GetList(status int) []RatingList {
 	var groups []models.CompGroup
 	err := models.DbAbit.Preload("Potok", func(db *gorm.DB) *gorm.DB {
 		return db.Where("potoks.pot_status_id = ?", status)
-	}).Preload("SpecSoots", func(db *gorm.DB) *gorm.DB {
+	}).Preload("Plan").Preload("SpecSoots", func(db *gorm.DB) *gorm.DB {
 		return db.Preload("AbitCard", func(db *gorm.DB) *gorm.DB {
 			return db.Preload("Marks", func(db *gorm.DB) *gorm.DB {
 				return db.Preload(clause.Associations)
@@ -69,10 +70,17 @@ func GetList(status int) []RatingList {
 	var rating []RatingList
 	for _, group := range groups {
 		list := getListApplicants(group.SpecSoots)
+		var plan int
+		if group.Plan.Plan1 == 0 {
+			plan = group.Plan.Plan1
+		} else {
+			plan = group.Plan.Plan2
+		}
 		rating = append(rating, RatingList{
-			GroupId: group.Id,
-			Name:    group.SsName,
-			Rating:  list,
+			GroupId:        group.Id,
+			Name:           group.SsName,
+			Rating:         list,
+			TotalPositions: plan,
 		})
 	}
 	return rating

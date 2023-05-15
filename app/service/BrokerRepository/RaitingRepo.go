@@ -84,6 +84,13 @@ func checkFreshness() (bool, error) {
 	if err != nil {
 		return false, err
 	}
+	inspect, err := cnResponse.QueueInspect("RatingAbit")
+	if inspect.Messages != 2 {
+		return true, nil
+	}
+	if err != nil {
+		return false, err
+	}
 	messages, err := cnResponse.Consume(
 		"RatingAbit", // queue name
 		"",           // consumer
@@ -93,19 +100,23 @@ func checkFreshness() (bool, error) {
 		false,        // no wait
 		nil,          // arguments
 	)
+	if err != nil {
+		return false, err
+	}
 	defer func(connResponse *amqp.Connection) {
 		err := connResponse.Close()
 		if err != nil {
 
 		}
 	}(connResponse)
+
 	then := time.Now().Add(time.Duration(-5) * time.Minute)
 	requestChan := make(chan bool)
 	go func() {
 		i := 0
 		for message := range messages {
 			i++
-			if message.Timestamp.Before(then) {
+			if message.Timestamp.Before(then) && i == 1 {
 				requestChan <- false
 			}
 			if i == 2 {

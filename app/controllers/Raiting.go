@@ -8,10 +8,6 @@ import (
 )
 
 func CompGroup(c *fiber.Ctx) error {
-	//err := BrokerRepository.RequestRating()
-	//if err != nil {
-	//	return err
-	//}
 	rating, err := BrokerRepository.RatingList()
 	if err != nil {
 		return err

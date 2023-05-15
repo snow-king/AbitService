@@ -56,6 +56,7 @@ func selectPlan(contractId int, plans models.Plan) int {
 type Rating struct {
 	AbitId int
 	Points int
+	Prior  int
 }
 
 func (a ApplicationAdmission) CalcPosition(compGroupId int) int {
@@ -73,6 +74,7 @@ func getListApplicants(soots []models.SpecSoot) []Rating {
 		points = append(points, Rating{
 			AbitId: soot.AbitId,
 			Points: getSumPoints(soot.AbitCard),
+			Prior:  soot.Raiting,
 		})
 	}
 	slices.SortFunc(points, func(a, b Rating) bool {
