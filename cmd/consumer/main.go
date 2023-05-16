@@ -3,8 +3,8 @@ package main
 import (
 	"AbitService/app/models"
 	"AbitService/app/service"
+	"AbitService/app/service/BrokerRepository"
 	"encoding/json"
-	"fmt"
 	"github.com/spf13/viper"
 	"github.com/streadway/amqp"
 	"log"
@@ -25,7 +25,7 @@ func main() {
 	<-ensure
 }
 func server(result chan string) {
-	ch, conn, err := service.DeclareQueue("RequestRating", false, false, false, false, nil)
+	ch, conn, err := BrokerRepository.DeclareQueue("RequestRating", false, false, false, false, nil)
 	if err != nil {
 		log.Println(err.Error())
 		result <- err.Error()
@@ -49,7 +49,7 @@ func server(result chan string) {
 	}(conn)
 	args := make(amqp.Table)
 	args["x-max-length"] = int32(2)
-	cnResponse, connResponse, err := service.DeclareQueue("RatingAbit", true, false, false, false, args)
+	cnResponse, connResponse, err := BrokerRepository.DeclareQueue("RatingAbit", true, false, false, false, args)
 	if err != nil {
 		log.Println(err.Error())
 		result <- err.Error()
@@ -90,7 +90,6 @@ func server(result chan string) {
 	forever := make(chan bool)
 	for m := range msgs {
 		num, err := strconv.Atoi(string(m.Body))
-		fmt.Println(num)
 		list := service.GetList(num)
 		js, _ := json.Marshal(list)
 		err = cnResponse.Publish(

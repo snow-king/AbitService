@@ -2,7 +2,7 @@ package service
 
 import (
 	"AbitService/app/models"
-	arrayUtils "AbitService/utils"
+	"AbitService/app/utils"
 	"golang.org/x/exp/slices"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -54,9 +54,10 @@ func selectPlan(contractId int, plans models.Plan) int {
 }
 
 type Rating struct {
-	AbitId int
-	Points int
-	Prior  int
+	AbitId         int
+	Points         int
+	Prior          int
+	AbsoluteRating bool
 }
 
 func (a ApplicationAdmission) CalcPosition(compGroupId int) int {

@@ -9,7 +9,7 @@ import (
 )
 
 func RequestRating() error {
-	ch, conn, err := service.DeclareQueue("RequestRating", false, false, false, false, nil)
+	ch, conn, err := DeclareQueue("RequestRating", false, false, false, false, nil)
 	if err != nil {
 		return err
 	}
@@ -45,7 +45,7 @@ func RatingList() ([]service.RatingList, error) {
 	}
 	args := make(amqp.Table)
 	args["x-max-length"] = int32(2)
-	cnResponse, connResponse, err := service.DeclareQueue("RatingAbit", true, false, false, false, args)
+	cnResponse, connResponse, err := DeclareQueue("RatingAbit", true, false, false, false, args)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +80,7 @@ func RatingList() ([]service.RatingList, error) {
 func checkFreshness() (bool, error) {
 	args := make(amqp.Table)
 	args["x-max-length"] = int32(2)
-	cnResponse, connResponse, err := service.DeclareQueue("RatingAbit", true, false, false, false, args)
+	cnResponse, connResponse, err := DeclareQueue("RatingAbit", true, false, false, false, args)
 	if err != nil {
 		return false, err
 	}
@@ -109,7 +109,6 @@ func checkFreshness() (bool, error) {
 
 		}
 	}(connResponse)
-
 	then := time.Now().Add(time.Duration(-5) * time.Minute)
 	requestChan := make(chan bool)
 	go func() {
