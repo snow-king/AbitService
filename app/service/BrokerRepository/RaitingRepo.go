@@ -85,8 +85,9 @@ func checkFreshness() (bool, error) {
 		return false, err
 	}
 	inspect, err := cnResponse.QueueInspect("RatingAbit")
+
 	if inspect.Messages != 2 {
-		return true, nil
+		return false, nil
 	}
 	if err != nil {
 		return false, err

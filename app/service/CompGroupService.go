@@ -2,6 +2,7 @@ package service
 
 import (
 	"AbitService/app/models"
+	"AbitService/app/repository"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"log"
@@ -54,16 +55,7 @@ func GetGroups(status int) []Comp {
 }
 
 func GetList(status int) []RatingList {
-	var groups []models.CompGroup
-	err := models.DbAbit.Preload("Potok", func(db *gorm.DB) *gorm.DB {
-		return db.Where("potoks.pot_status_id = ?", status)
-	}).Preload("Plan").Preload("SpecSoots", func(db *gorm.DB) *gorm.DB {
-		return db.Preload("AbitCard", func(db *gorm.DB) *gorm.DB {
-			return db.Preload("Marks", func(db *gorm.DB) *gorm.DB {
-				return db.Preload(clause.Associations)
-			})
-		})
-	}).Find(&groups).Error
+	groups, err := repository.CompGroups(status)
 	if err != nil {
 		log.Println(err)
 	}

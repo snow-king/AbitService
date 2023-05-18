@@ -42,5 +42,55 @@ func (Person) TableName() string {
 type AbitCard struct {
 	Id       int
 	PersonID int
-	Marks    []Mark `gorm:"foreignKey:AbitId;references:Id"`
+	Marks    []Mark     `gorm:"foreignKey:AbitId;references:Id"`
+	LgotSoot []LgotSoot `gorm:"foreignKey:AbitId;references:Id"`
+}
+
+type LgotSoot struct {
+	Id         int
+	AbitId     int        `json:"abitId,omitempty"`
+	SDoc       string     `json:"SDoc,omitempty"`
+	NDoc       string     `json:"NDoc,omitempty"`
+	LocDoc     string     `json:"locDoc,omitempty"`
+	DateDoc    time.Time  `json:"dateDoc"`
+	LgotVidId  int        `json:"lgotVidId,omitempty"`
+	Confirm    int        `json:"confirm,omitempty"`
+	Mark       int        `json:"mark,omitempty"`
+	Active     int        `json:"active,omitempty"`
+	CreateAt   time.Time  `json:"create_At"`
+	UpdateAt   time.Time  `json:"update_At"`
+	LgotVidDoc LgotVidDoc `gorm:"foreignKey:Id;references:LgotVidId"`
+}
+
+func (LgotSoot) TableName() string {
+	return "lgot_soot"
+}
+
+type LgotVidDoc struct {
+	Id              int       `json:"id,omitempty"`
+	LgotId          int       `json:"lgotId,omitempty"`
+	DocName         string    `json:"docName,omitempty"`
+	GtypeId         int       `json:"gtypeId,omitempty"`
+	MarkRecommended int       `json:"markRecommended,omitempty"`
+	Active          int       `json:"active,omitempty"`
+	SsTypeId        int       `json:"ssTypeId,omitempty"`
+	SsCategoryId    int       `json:"ssCategoryId,omitempty"`
+	UpdateAt        time.Time `json:"updateAt"`
+	Lgot            Lgot      `gorm:"foreignKey:Id;references:LgotId"`
+}
+
+func (LgotVidDoc) TableName() string {
+	return "lgot_vid_doc"
+}
+
+type Lgot struct {
+	Id         int
+	Name       string
+	ParentID   string
+	LgotTypeID int
+	Active     int
+}
+
+func (Lgot) TableName() string {
+	return "lgots"
 }

@@ -1,6 +1,9 @@
 package service
 
-import "AbitService/app/models"
+import (
+	"AbitService/app/models"
+	"AbitService/app/repository"
+)
 
 type PersonService struct {
 	person models.Person
@@ -12,11 +15,10 @@ func (p *PersonService) Show(id int) models.Person {
 	return p.person
 }
 func (p *PersonService) GetFamily(id int) []models.FamilyStatus {
-	models.DbAbit.Where("person_id", id).Find(&p.family)
+	repo := new(repository.PersonRepo)
+	p.family = repo.Family(id)
 	var children []models.FamilyStatus
 	for _, family := range p.family {
-		var child models.Person
-		models.DbAbit.Where("id", family.Person2Id).Find(&child)
 		children = append(children, models.FamilyStatus{
 			Status: family.Status,
 			Person: struct {
@@ -24,14 +26,10 @@ func (p *PersonService) GetFamily(id int) []models.FamilyStatus {
 				FullName string `json:"fullName,omitempty" `
 				Token    string `json:"token,omitempty"`
 			}(struct {
-				Id       int    `json:"id,omitempty"`
-				FullName string `json:"fullName,omitempty"`
-				Token    string `json:"token,omitempty"`
-			}(struct {
 				Id       int
 				FullName string
 				Token    string
-			}{Id: child.ID, FullName: child.Name + " " + child.LastName + " " + child.Surname, Token: child.Token})),
+			}{Id: family.Child.ID, FullName: family.Child.Name + " " + family.Child.LastName + " " + family.Child.Surname, Token: family.Child.Token}),
 		})
 	}
 	return children

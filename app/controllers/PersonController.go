@@ -1,6 +1,7 @@
 package Handlers
 
 import (
+	"AbitService/app/repository"
 	"AbitService/app/service"
 	"github.com/gofiber/fiber/v2"
 	"log"
@@ -17,8 +18,8 @@ func Index(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Не верный id"})
 	}
-	person := new(service.PersonService)
-	response := person.Show(id)
+	person := new(repository.PersonRepo)
+	response := person.Index(id)
 	return c.Status(fiber.StatusOK).JSON(response)
 }
 func ShowFamily(c *fiber.Ctx) error {

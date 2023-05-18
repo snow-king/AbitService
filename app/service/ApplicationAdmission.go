@@ -2,10 +2,8 @@ package service
 
 import (
 	"AbitService/app/models"
-	"AbitService/app/utils"
+	"AbitService/app/repository"
 	"golang.org/x/exp/slices"
-	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 type AdmissionList struct {
@@ -25,11 +23,8 @@ func NewApplicationAdmission(abitId int) *ApplicationAdmission {
 }
 
 func (a ApplicationAdmission) List() []AdmissionList {
-	var list []models.SpecSoot
 	var admissions []AdmissionList
-	models.DbAbit.Preload("Contract").Preload("CompGroups", func(db *gorm.DB) *gorm.DB {
-		return db.Preload(clause.Associations)
-	}).Where("abit_id", a.AbitId).Find(&list)
+	list := repository.SpecSootsByAbit(a.AbitId)
 	for _, soot := range list {
 		admissions = append(admissions, AdmissionList{
 			Name:           soot.CompGroups.SsName,
@@ -55,7 +50,7 @@ func selectPlan(contractId int, plans models.Plan) int {
 
 type Rating struct {
 	AbitId         int
-	Points         int
+	Points         Points
 	Prior          int
 	AbsoluteRating bool
 }
@@ -72,30 +67,15 @@ func (a ApplicationAdmission) CalcPosition(compGroupId int) int {
 func getListApplicants(soots []models.SpecSoot) []Rating {
 	var points []Rating
 	for _, soot := range soots {
+		abit := NewAbitCardService(soot.AbitCard)
 		points = append(points, Rating{
 			AbitId: soot.AbitId,
-			Points: getSumPoints(soot.AbitCard),
+			Points: abit.GetSumPoints(),
 			Prior:  soot.Raiting,
 		})
 	}
 	slices.SortFunc(points, func(a, b Rating) bool {
-		return a.Points > b.Points
+		return a.Points.Summary > b.Points.Summary
 	})
 	return points
-}
-func getSumPoints(abit models.AbitCard) int {
-	var sum int
-	var arr []models.Mark
-	for i := 1; i < 6; i++ {
-		arr = arrayUtils.Filter(abit.Marks, func(t models.Mark) bool {
-			return t.Subject.Priority == i
-		})
-		slices.SortFunc(arr, func(a, b models.Mark) bool {
-			return a.Mark > b.Mark
-		})
-		if len(arr) > 0 {
-			sum += arr[0].Mark
-		}
-	}
-	return sum
 }
