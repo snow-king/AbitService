@@ -8,7 +8,7 @@ ____
 | **Назначение** | **Технология** |
 |:---------------|:--------------:|
 | Sender         |  Golang/Fiber  |
-| Frontend       |     Golang     |
+| Consumer       |     Golang     |
 | Database       |     MySQL      |
 | Message-broker |    RabbitMQ    |
 | Containerizer  |     Docker     |
